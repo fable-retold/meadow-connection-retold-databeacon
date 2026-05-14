@@ -1,6 +1,6 @@
 {
 	"name": "meadow-connection-retold-databeacon",
-	"version": "0.0.3",
+	"version": "1.0.0",
 	"description": "Meadow connection that relays CRUD and introspection through an Ultravisor mesh to a remote retold-databeacon agent.",
 	"main": "source/Meadow-Connection-RetoldDataBeacon.js",
 	"scripts": {
@@ -46,6 +46,6 @@
 	},
 	"dependencies": {
 		"fable-serviceproviderbase": "^3.0.19",
-		"fable-ultravisor-client": "^0.0.1"
+		"fable-ultravisor-client": "^1.0.0"
 	}
 }
