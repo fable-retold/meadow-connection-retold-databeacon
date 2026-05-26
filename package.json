@@ -25,7 +25,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/stevenvelozo/meadow-connection-retold-databeacon.git"
+		"url": "https://github.com/fable-retold/meadow-connection-retold-databeacon.git"
 	},
 	"keywords": [
 		"meadow",
@@ -37,9 +37,9 @@
 	"author": "Steven Velozo <steven@velozo.com> (http://velozo.com/)",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/stevenvelozo/meadow-connection-retold-databeacon/issues"
+		"url": "https://github.com/fable-retold/meadow-connection-retold-databeacon/issues"
 	},
-	"homepage": "https://github.com/stevenvelozo/meadow-connection-retold-databeacon",
+	"homepage": "https://github.com/fable-retold/meadow-connection-retold-databeacon",
 	"devDependencies": {
 		"chai": "^4.3.10",
 		"mocha": "^10.2.0"
