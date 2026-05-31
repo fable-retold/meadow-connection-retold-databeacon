@@ -17,6 +17,7 @@ npm install meadow-connection-retold-databeacon
     Type: 'RetoldDataBeacon',
     UltravisorURL: 'https://ultravisor.noc.example',
     TargetBeaconName: 'customer-acme-prod',
+    TargetConnectionHash: 'warehouse-db',   // REQUIRED: URL-safe hash of the remote connection name
     UserName: 'engineer-alice',
     Password: 'hunter2',
     TimeoutMs: 30000,            // optional, default 30000
