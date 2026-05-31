@@ -31,7 +31,7 @@ There is one built-in default: `TimeoutMs` falls back to `30000` (30 seconds) wh
 
 All three of `UltravisorURL`, `TargetBeaconName`, and `TargetConnectionHash` are validated by `connectAsync()`. If any is missing, connect logs an error and calls back with an `Error` naming the missing key; `connected` stays `false`.
 
-> The module's root README configuration example predates the `TargetConnectionHash` requirement and omits it. The source requires `TargetConnectionHash` -- always include it. This documentation reflects the source.
+> `TargetConnectionHash` is required -- `connectAsync()` errors without it. It is the URL-safe hash of the remote connection name.
 
 ### Example
 
