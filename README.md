@@ -1,5 +1,7 @@
 # meadow-connection-retold-databeacon
 
+> **[Read the meadow-connection-retold-databeacon Documentation](https://fable-retold.github.io/meadow-connection-retold-databeacon/)**
+
 A [meadow](https://github.com/fable-retold/meadow) connection that relays CRUD and introspection through an [Ultravisor](https://github.com/stevenvelozo/ultravisor) mesh to a remote [retold-databeacon](https://github.com/fable-retold/retold-databeacon) agent.
 
 When a BeaconConnection row has `Type = 'RetoldDataBeacon'`, meadow-connection-manager loads this module. The pair with the `MeadowProxy` capability on the remote databeacon gives you introspection, REST, CRUD, and raw SQL against a customer database transparently - no VPN, no vendor SQL client.
