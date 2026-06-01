@@ -182,7 +182,7 @@ The client captures the session cookie from the authenticate response and attach
 
 `meadow-connection-manager` is the registry that maps a `Type` string to a connection module. The relevant entry for this module:
 
-- **Module map:** `'RetoldDataBeacon'` &rarr; `'meadow-connection-retold-databeacon'`
+- **Module map:** `'RetoldDataBeacon'` -> `'meadow-connection-retold-databeacon'`
 
 ```mermaid
 sequenceDiagram
