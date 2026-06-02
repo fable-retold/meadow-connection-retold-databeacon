@@ -1,0 +1,28 @@
+sequenceDiagram
+	participant Prov as Meadow-Provider-RetoldDataBeacon
+	participant Conn as MeadowConnectionRetoldDataBeacon
+	participant Client as fable-ultravisor-client
+	participant UV as Ultravisor Coordinator
+	participant Beacon as Remote databeacon (MeadowProxy)
+	participant REST as Beacon localhost REST
+
+	Prov->>Conn: dispatchRequest({ Method, Path, Body }, cb)
+	alt not connected
+		Conn-->>Prov: Error (not connected)
+	else connected
+		Conn->>Conn: wrap as MeadowProxy:Request work item
+		Conn->>Client: dispatch(workItem)
+		Client->>UV: POST /Beacon/Work/Dispatch (+ session cookie)
+		UV->>UV: route by AffinityKey = TargetBeaconName
+		UV->>Beacon: push work item to bound beacon
+		Beacon->>REST: <Method> http://localhost/<Path>
+		REST-->>Beacon: HTTP status + JSON body
+		Beacon-->>UV: Outputs { Status, Body }
+		UV-->>Client: JSON envelope { Outputs }
+		Client-->>Conn: (null, result)
+		alt Outputs.Status >= 400
+			Conn-->>Prov: Error (Remote databeacon returned HTTP N)
+		else success
+			Conn-->>Prov: (null, Outputs.Body)
+		end
+	end

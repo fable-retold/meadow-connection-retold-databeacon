@@ -1,0 +1,44 @@
+graph TB
+	subgraph Consumer["Consumer Process (laptop / CLI / beacon)"]
+		A[Application Code]
+		B[Meadow Entity]
+		C[FoxHound MeadowEndpoints dialect]
+	end
+
+	subgraph Provider["Meadow-Provider-RetoldDataBeacon (in meadow core)"]
+		D[Create / Read / Update / Delete / Count]
+		E["build descriptor { Method, Path, Body }"]
+	end
+
+	subgraph Connection["meadow-connection-retold-databeacon (this module)"]
+		F[Config shape + resolution]
+		G[fable-ultravisor-client handle]
+		H["dispatchRequest -> MeadowProxy:Request work item"]
+	end
+
+	subgraph Coordinator["Ultravisor Coordinator"]
+		I["/Beacon/Work/Dispatch"]
+		J[AffinityKey routing]
+	end
+
+	subgraph Remote["Remote retold-databeacon (customer side)"]
+		K[MeadowProxy handler]
+		L["localhost REST  /1.0/<hash>/<Entity>"]
+		M[(Customer Database)]
+	end
+
+	A -->|doCreate / doRead / doUpdate / doDelete| B
+	B -->|setProvider RetoldDataBeacon| C
+	C -->|path + verb| D
+	D --> E
+	E -->|dispatchRequest| H
+	H -->|_Client.dispatch| I
+	I --> J
+	J -->|push to bound beacon| K
+	K --> L
+	L --> M
+
+	style Connection fill:#e8f4f8,stroke:#2E7D74,stroke-width:2px
+	style Consumer fill:#f5f0e8,stroke:#423D37,stroke-width:1px
+	style Coordinator fill:#eef7ee,stroke:#3c763d,stroke-width:1px
+	style Remote fill:#fef3e2,stroke:#c97a2e,stroke-width:1px

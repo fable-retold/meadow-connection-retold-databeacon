@@ -1,0 +1,15 @@
+sequenceDiagram
+	participant App as Application
+	participant MCM as MeadowConnectionManager
+	participant Conn as MeadowConnectionRetoldDataBeacon
+	participant UV as Ultravisor Coordinator
+
+	App->>MCM: connect(name, { Type: 'RetoldDataBeacon', ... })
+	MCM->>MCM: require('meadow-connection-retold-databeacon')
+	MCM->>MCM: set fable.settings.RetoldDataBeacon = config
+	MCM->>Conn: instantiate
+	MCM->>Conn: connectAsync(callback)
+	Conn->>UV: POST /1.0/Authenticate
+	UV-->>Conn: session cookie
+	Conn-->>MCM: connected (registers fable.MeadowRetoldDataBeaconProvider)
+	MCM-->>App: connection entry stored

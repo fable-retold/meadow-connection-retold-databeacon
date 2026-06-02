@@ -8,52 +8,8 @@ Meadow Connection Retold DataBeacon relays meadow CRUD and introspection to a re
 
 The defining fact of this module: it does **not** build the meadow CRUD HTTP requests. That work lives in the meadow core provider `Meadow-Provider-RetoldDataBeacon`. This module is the connection-manager-shaped wrapper that surrounds the provider with an Ultravisor client, configuration, and the dispatch transport.
 
-```mermaid
-graph TB
-	subgraph Consumer["Consumer Process (laptop / CLI / beacon)"]
-		A[Application Code]
-		B[Meadow Entity]
-		C[FoxHound MeadowEndpoints dialect]
-	end
-
-	subgraph Provider["Meadow-Provider-RetoldDataBeacon (in meadow core)"]
-		D[Create / Read / Update / Delete / Count]
-		E["build descriptor { Method, Path, Body }"]
-	end
-
-	subgraph Connection["meadow-connection-retold-databeacon (this module)"]
-		F[Config shape + resolution]
-		G[fable-ultravisor-client handle]
-		H["dispatchRequest -> MeadowProxy:Request work item"]
-	end
-
-	subgraph Coordinator["Ultravisor Coordinator"]
-		I["/Beacon/Work/Dispatch"]
-		J[AffinityKey routing]
-	end
-
-	subgraph Remote["Remote retold-databeacon (customer side)"]
-		K[MeadowProxy handler]
-		L["localhost REST  /1.0/<hash>/<Entity>"]
-		M[(Customer Database)]
-	end
-
-	A -->|doCreate / doRead / doUpdate / doDelete| B
-	B -->|setProvider RetoldDataBeacon| C
-	C -->|path + verb| D
-	D --> E
-	E -->|dispatchRequest| H
-	H -->|_Client.dispatch| I
-	I --> J
-	J -->|push to bound beacon| K
-	K --> L
-	L --> M
-
-	style Connection fill:#e8f4f8,stroke:#2E7D74,stroke-width:2px
-	style Consumer fill:#f5f0e8,stroke:#423D37,stroke-width:1px
-	style Coordinator fill:#eef7ee,stroke:#3c763d,stroke-width:1px
-	style Remote fill:#fef3e2,stroke:#c97a2e,stroke-width:1px
-```
+<!-- bespoke diagram: edit diagrams/the-relay-split.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-connection-retold-databeacon/docs -->
+![The Relay Split](diagrams/the-relay-split.svg)
 
 The two halves of the relay communicate through `fable.MeadowRetoldDataBeaconProvider`. On a successful connect this module sets that property to itself, and the provider reads it to find the live transport. When the provider has a descriptor to send, it calls `this.dispatchRequest({ Method, Path, Body }, cb)` and parses the JSON string that comes back.
 
@@ -88,36 +44,8 @@ The request builder this connection feeds, living in the `meadow` package under 
 
 `dispatchRequest` is the heart of the transport. It turns the provider's descriptor into a coordinator work item and unwraps the beacon's response.
 
-```mermaid
-sequenceDiagram
-	participant Prov as Meadow-Provider-RetoldDataBeacon
-	participant Conn as MeadowConnectionRetoldDataBeacon
-	participant Client as fable-ultravisor-client
-	participant UV as Ultravisor Coordinator
-	participant Beacon as Remote databeacon (MeadowProxy)
-	participant REST as Beacon localhost REST
-
-	Prov->>Conn: dispatchRequest({ Method, Path, Body }, cb)
-	alt not connected
-		Conn-->>Prov: Error (not connected)
-	else connected
-		Conn->>Conn: wrap as MeadowProxy:Request work item
-		Conn->>Client: dispatch(workItem)
-		Client->>UV: POST /Beacon/Work/Dispatch (+ session cookie)
-		UV->>UV: route by AffinityKey = TargetBeaconName
-		UV->>Beacon: push work item to bound beacon
-		Beacon->>REST: <Method> http://localhost/<Path>
-		REST-->>Beacon: HTTP status + JSON body
-		Beacon-->>UV: Outputs { Status, Body }
-		UV-->>Client: JSON envelope { Outputs }
-		Client-->>Conn: (null, result)
-		alt Outputs.Status >= 400
-			Conn-->>Prov: Error (Remote databeacon returned HTTP N)
-		else success
-			Conn-->>Prov: (null, Outputs.Body)
-		end
-	end
-```
+<!-- bespoke diagram: edit diagrams/the-dispatch-flow.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-connection-retold-databeacon/docs -->
+![The Dispatch Flow](diagrams/the-dispatch-flow.svg)
 
 ### The Work Item
 
@@ -184,23 +112,8 @@ The client captures the session cookie from the authenticate response and attach
 
 - **Module map:** `'RetoldDataBeacon'` -> `'meadow-connection-retold-databeacon'`
 
-```mermaid
-sequenceDiagram
-	participant App as Application
-	participant MCM as MeadowConnectionManager
-	participant Conn as MeadowConnectionRetoldDataBeacon
-	participant UV as Ultravisor Coordinator
-
-	App->>MCM: connect(name, { Type: 'RetoldDataBeacon', ... })
-	MCM->>MCM: require('meadow-connection-retold-databeacon')
-	MCM->>MCM: set fable.settings.RetoldDataBeacon = config
-	MCM->>Conn: instantiate
-	MCM->>Conn: connectAsync(callback)
-	Conn->>UV: POST /1.0/Authenticate
-	UV-->>Conn: session cookie
-	Conn-->>MCM: connected (registers fable.MeadowRetoldDataBeaconProvider)
-	MCM-->>App: connection entry stored
-```
+<!-- bespoke diagram: edit diagrams/loading-through-the-connection-manager.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-connection-retold-databeacon/docs -->
+![Loading Through the Connection Manager](diagrams/loading-through-the-connection-manager.svg)
 
 When the manager runs `testConnection`, this type is treated as **already probed** -- the authenticate handshake during connect is itself the connectivity check, so no extra round-trip probe is issued (unlike lazy-pool SQL drivers, which need a `SELECT 1`).
 
