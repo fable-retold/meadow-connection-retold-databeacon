@@ -1,0 +1,5 @@
+graph LR
+    Provider["meadow provider<br/>RetoldDataBeacon"] -->|dispatch| Ultravisor["ultravisor<br/>coordinator"]
+    Ultravisor -->|push| Beacon["remote databeacon<br/>MeadowProxy<br/>→ localhost:PORT<br/>/1.0/&lt;Entity&gt;"]
+    Beacon -->|JSON response| Connection["this connection"]
+    Connection -->|"{ Method, Path, Body }"| Provider

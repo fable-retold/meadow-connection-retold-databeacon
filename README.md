@@ -33,19 +33,8 @@ npm install meadow-connection-retold-databeacon
 
 ## Architecture
 
-```
-┌──────────────────┐   dispatch   ┌──────────────┐   push   ┌────────────────────┐
-│ meadow provider  │─────────────-│  ultravisor  │─────────-│ remote databeacon  │
-│ RetoldDataBeacon │              │  coordinator │          │ MeadowProxy        │
-└──────────────────┘              └──────────────┘          │  → localhost:PORT  │
-         ▲                                                   │    /1.0/<Entity>   │
-         │                                                   └────────────────────┘
-         │ { Method, Path, Body }                                      │
-         │                                                              │
-┌──────────────────┐                                                    │
-│ this connection  │◀───────────────────── JSON response ───────────────┘
-└──────────────────┘
-```
+<!-- bespoke diagram: edit diagrams/architecture.mmd or .hints.json, then: npx pict-renderer-graph build modules/meadow/meadow-connection-retold-databeacon -->
+![Architecture](diagrams/architecture.svg)
 
 The connection owns a `fable-ultravisor-client` handle. The meadow core provider `Meadow-Provider-RetoldDataBeacon` calls `this.dispatchRequest({Method, Path, Body}, cb)` on each CRUD operation, the request is wrapped as a `MeadowProxy:Request` work item, ultravisor routes it to the bound beacon, the remote `MeadowProxy` handler runs the HTTP request against its own localhost REST API, and the JSON response flows back.
 
